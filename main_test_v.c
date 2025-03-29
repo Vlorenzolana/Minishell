@@ -10,9 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_exec.h"
+/* #include "minishell_exec.h" */
 #include "minishell_parsing.h"
-
 #include "mvp.h"
 
 static t_pipes	*init_struct(t_pipes *args)
@@ -339,7 +338,6 @@ int	main(int argc, char **argv, char **envp)
 				ft_lstadd_front2(&new_node, new_node->next); // añadir encima
 		}
 		new_node = temp2;
-		printf("ARGS TRAS 1ER SPLIT %s\n", new_node->str);
 		check_args(args);
 	}
 	args = temp; // Recuperamos HEAD
@@ -353,11 +351,11 @@ int	main(int argc, char **argv, char **envp)
 > PARA PROBAR:
 >
 > make testv
-> ./a.out + ENTER
+> ./minishell + ENTER
 > minishell>> echo "Lola que ase" >> out.txt | ls .l | wc -l
 */
 
-/* // MAIN ANTERIOR QUE 
+/* // MAIN ANTERIOR QUE NO SIRVE 
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
