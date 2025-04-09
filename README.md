@@ -1,10 +1,16 @@
-# Parser & Test Interactivo
+# Parser: Minishell-Vanessa's Fork/branch:test
 
-Minishel parsing and testing.
+Minishell parsing logic with an interactive CLI and unit test support.
 
-- Pipes (`|`)
-- Tokens (`echo`, `"text"`, `>`, `<`, etc.)
-- Redirections
+---
+
+## FEATURES
+
+- Pipe parsing (`|`)
+- Tokenization (`echo`, `"text"`, `>`, `<`, etc.)
+- Redirection handling
+- Argument parsing (`""`, `''`, etc.)
+
 
 ## USE:
 
@@ -19,17 +25,15 @@ Minishel parsing and testing.
 >> make test
 >> ./test_parser
 
-## STRUCTURE:
-Minishell/
+## STRUCTURE:Minishell-Vanessa's Fork/branch:test
 │
 ├── Makefile
 ├── include/
-│   └── parser.h
+│   └── parser.h            # Header file for parsing logic
 │
 ├── src/
-│   ├── parser.c      # Parsing logic
-│   └── main.c        # Your interactive shell loop (moved from parser.c)
+│   ├── parser.c            # Core parsing logic
+│   └── main.c              # Interactive shell loop
 │
 ├── tests/
-│   └── test_parser.c # Unit tests
-
+│   └── test_parser.c       # Unit tests
