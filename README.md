@@ -12,3 +12,11 @@ Este proyecto es una herramienta para testear y visualizar cómo un minishell pu
 make
 ./parser
 
+minishell-tools/
+├── Makefile
+├── include/
+│   └── minishell_parser.h
+├── src/
+│   ├── minishell_parser.c
+│   └── test.c
+
