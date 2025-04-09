@@ -14,16 +14,26 @@ Minishell parsing logic with an interactive CLI and unit test support.
 
 ## USE:
 
->> make
->> ./parser
->> minishell>> write you arguments
->> PRESS Ctrl + C to eXIT
+Build and run the interactive parser:
+
+```bash
+make
+./parser
+```
+
+Inside the interactive shell:
+
+```bash
+minishell>> echo "hello | world"
+```
 
 ## TESTS:
 
->> make clean
->> make test
->> ./test_parser
+```bash
+make clean
+make test
+./test_parser
+```
 
 ## STRUCTURE:Minishell-Vanessa's Fork/branch:test
 ```
