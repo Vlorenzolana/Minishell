@@ -26,6 +26,7 @@ Minishell parsing logic with an interactive CLI and unit test support.
 >> ./test_parser
 
 ## STRUCTURE:Minishell-Vanessa's Fork/branch:test
+```
 │
 ├── Makefile
 ├── include/
@@ -37,3 +38,4 @@ Minishell parsing logic with an interactive CLI and unit test support.
 │
 ├── tests/
 │   └── test_parser.c       # Unit tests
+´´´
