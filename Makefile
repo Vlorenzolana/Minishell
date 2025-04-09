@@ -18,8 +18,8 @@ valgrind: $(NAME)
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME)
 
 
-test: $(TEST_SRC) $(SRC)
-	$(CC) $(CFLAGS) $(INC) $(SRC) $(TEST_SRC) -o $(TEST) $(LIBS)
+test: $(TEST_SRC) src/parser.c # No main.c nor $(SRC)
+	$(CC) $(CFLAGS) $(INC) src/parser.c $(TEST_SRC) -o $(TEST) $(LIBS) 
 
 clean:
 	rm -f $(NAME) $(TEST)

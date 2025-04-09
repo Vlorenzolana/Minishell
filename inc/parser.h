@@ -38,7 +38,7 @@ typedef struct s_pipes
 // PARSING
 t_tokens	*check_args(const char *str);
 char		*poly_substr(const char *s, size_t *i);
-static void	print_tokens(t_tokens *token);
+void		print_tokens(t_tokens *token);
 void		free_tokens(t_tokens *token);
 void		free_pipes(t_pipes *pipes);
 t_tokens 	*check_args_fixed(const char *input);
@@ -50,9 +50,8 @@ char		**ft_split(const char *s, char c, size_t *n);
 size_t		count_splitted(const char *s, char c);
 
 // TEST
-
 void 		run_parser_tests(void);
-static void print_tokens(t_tokens *token);
+
 
 
 #endif

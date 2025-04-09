@@ -1,15 +1,5 @@
 #include "../inc/parser.h"
 
-// Simple helper to print tokens for verification
-void print_tokens(t_tokens *tokens)
-{
-	while (tokens)
-	{
-		printf("Token: [%s]\n", tokens->str);
-		tokens = tokens->next;
-	}
-}
-
 // Basic unit test
 void run_parser_tests(void)
 {
@@ -17,6 +7,7 @@ void run_parser_tests(void)
 		"echo hello world",
 		"ls -la | grep .c",
 		"cat < file.txt | sort > output.txt",
+		"cat < 'file.txt | sort > output.txt",
 		NULL};
 
 	for (int i = 0; tests[i] != NULL; i++)

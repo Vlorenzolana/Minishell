@@ -1,22 +1,35 @@
-# Test Minishel – Parser Interactivo
+# Parser & Test Interactivo
 
-Este proyecto es una herramienta para testear y visualizar cómo un minishell puede analizar comandos ingresados por el usuario. Ideal para debugging de:
+Minishel parsing and testing.
 
 - Pipes (`|`)
 - Tokens (`echo`, `"text"`, `>`, `<`, etc.)
-- Redirecciones
+- Redirections
 
-## Uso
+## USE:
 
-```bash
-make
-./parser
+>> make
+>> ./parser
+>> minishell>> write you arguments
+>> PRESS Ctrl + C to eXIT
 
-minishell-tools/
+## TESTS:
+
+>> make clean
+>> make test
+>> ./test_parser
+
+## STRUCTURE:
+Minishell/
+│
 ├── Makefile
 ├── include/
-│   └── minishell_parser.h
+│   └── parser.h
+│
 ├── src/
-│   ├── minishell_parser.c
-│   └── test.c
+│   ├── parser.c      # Parsing logic
+│   └── main.c        # Your interactive shell loop (moved from parser.c)
+│
+├── tests/
+│   └── test_parser.c # Unit tests
 
