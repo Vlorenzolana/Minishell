@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 10:21:52 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/06 18:06:45 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/07 23:40:50 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,8 @@ typedef struct s_pipes
 struct					s_tokens
 {
 	int					was_quoted;
+	int					s_quoted;
+	int					d_quoted;
 	int					skip;
 	char				*str;
 	t_TokenType			type;
@@ -109,7 +111,7 @@ typedef struct s_cleanup_args
 }						t_cleanup_args;
 
 //////////////////////////////////
-//-----FUNCTIONS-----------------
+//-----------FUNCTIONS----------//
 //////////////////////////////////
 
 // UTILS INIT & HANDLE
@@ -185,4 +187,8 @@ size_t					handle_variable(const char *str, size_t i,
 
 // UTILS HEREDOC
 int						process_heredoc_runtime(const char *delimiter);
+
+// GET TOKENS EVERYWHEREEEE
+t_tokens				*get_tokens(void);
+
 #endif

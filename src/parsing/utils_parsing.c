@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 12:51:18 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/06 18:24:24 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/07 23:44:11 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,13 @@ size_t	is_open(const char *s)
 	int		i;
 	bool	is_single_quote;
 	bool	is_double_quote;
-
+	t_tokens *tokens;
+	
 	is_single_quote = false;
 	is_double_quote = false;
+	tokens = get_tokens();
+	tokens->s_quoted = 0;
+	tokens->d_quoted = 0;
 	i = 0;
 	while (s[i])
 	{
@@ -59,5 +63,9 @@ size_t	is_open(const char *s)
 			is_double_quote = !is_double_quote;
 		i++;
 	}
+	if (!is_single_quote)
+		tokens->s_quoted = 1;
+	if (!is_double_quote)
+		tokens->d_quoted = 1;
 	return (is_single_quote || is_double_quote);
 }

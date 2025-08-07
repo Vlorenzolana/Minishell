@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 12:51:29 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/06 17:20:22 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/07 23:42:53 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,11 @@ size_t	splitted_len(const char *s, char c)
 static int	handle_open_check(const char *s, size_t k, size_t j, char **array)
 {
 	char	*tmp;
+	int d_quote;
+	int s_quote;
 
+	d_quote = 0;
+	s_quote = 0;
 	tmp = ft_substr(s, k, j - k);
 	if (!tmp)
 		return (0);
