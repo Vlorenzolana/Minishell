@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:29:51 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/07 23:41:15 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:42:11 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void	process_input_line(char *line, t_data *data, int in, int out)
 	if (!line || !*line)
 		return ;
 	n_pipe = 0;
+	//pipe_seg = NULL;
+	//*pipe_seg = NULL;
 	add_history(line);
 	if (!ft_strcmp(line, "history"))
 		return (print_history(), (void)0);
@@ -76,7 +78,10 @@ void	main_loop(t_data *data)
 			shell_exit(&line, data);
 		process_input_line(line, data, in, out);
 		if (line)
+		{
 			free(line);
+			line = NULL;
+		}
 	}
 	write_history(".minishell_history");
 	rl_clear_history();

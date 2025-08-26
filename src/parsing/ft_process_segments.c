@@ -6,19 +6,12 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 14:36:10 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/07 23:40:02 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:04:10 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
-
-t_tokens	*get_tokens(void)
-{
-	static t_tokens	tokens;
-
-	return (&tokens);
-}
 
 // PROCESS ALL PIPES/SEGMENTS
 void	process_single_segment(char *segment, t_tokens **token, t_data *data,

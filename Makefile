@@ -117,18 +117,22 @@ clean:
 	@make -C $(LIBFT_DIR) clean
 	@echo "$(GREEN)All the object files deleted successfully.$(RESET)"
 
+# ─────────────────────────────────────────────────────────────
+# FCLEAN
+# ─────────────────────────────────────────────────────────────
+
 fclean: clean
 	@echo "$(YELLOW)Deleting the object files, *.a and executable file...$(RESET)"
 	@$(RM) $(MINISHELL_EXEC_LIB) $(MINISHELL_PARSING_LIB) $(MINISHELL_SIGNALS_LIB) $(AU_LIB) $(NAME)
 	@make -C $(LIBFT_DIR) fclean
 	@echo "$(GREEN)Everything deleted successfully.$(RESET)"
 # ─────────────────────────────────────────────────────────────
-# RE
+# RUN
 # ─────────────────────────────────────────────────────────────
 
 re: fclean all
 
-run: re
+run: re clean
 	./minishell
 
 # ─────────────────────────────────────────────────────────────
@@ -137,7 +141,7 @@ run: re
 
 VALGRIND_FLAGS = -s --leak-check=full --show-leak-kinds=all --track-fds=yes
 
-valgrind: all
+valgrind: all clean
 	@echo "$(BLUE)Ejecutando Valgrind con ./minishell...$(RESET)"
 	valgrind $(VALGRIND_FLAGS) ./minishell
 

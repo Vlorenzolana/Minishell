@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 12:51:18 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/07 23:44:11 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:51:32 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 int	is_path(const char *str)
 {
 	if (!str || ft_strlen(str) < 2)
+		return (0);
+	if (str[0] == '.' && str[1] == '/')
 		return (0);
 	if (str[0] == '/')
 		return (1);
@@ -52,15 +54,23 @@ size_t	is_open(const char *s)
 	is_single_quote = false;
 	is_double_quote = false;
 	tokens = get_tokens();
-	tokens->s_quoted = 0;
-	tokens->d_quoted = 0;
-	i = 0;
+	i = 0; int j = 0; int k = 0; tokens->plicas = malloc(2); tokens->aspas = malloc(2); //puntero tiene dos posiciones
 	while (s[i])
 	{
-		if (s[i] == '\'' && (!i || s[i - 1] != '\\') && !is_double_quote)
+		if (s[i] == '\'' && (s[i - 1] != '\\') && !is_double_quote)
+		{
 			is_single_quote = !is_single_quote;
-		else if (s[i] == '"' && (!i || s[i - 1] != '\\') && !is_single_quote)
+			tokens->plicas[j] = i;
+			printf("plicas %d\n", tokens->plicas[j]);
+			j++;
+		}
+		else if (s[i] == '"' && (s[i - 1] != '\\') && !is_single_quote)
+		{
 			is_double_quote = !is_double_quote;
+			tokens->aspas[k] = i;
+			printf("aspas %d\n", tokens->aspas[k]);
+			k++;		
+		}
 		i++;
 	}
 	if (!is_single_quote)

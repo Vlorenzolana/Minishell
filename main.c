@@ -6,13 +6,20 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 15:42:59 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/05 20:34:48 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:04:21 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 #include "minishell_signals.h"
+
+t_tokens	*get_tokens(void)
+{
+	static t_tokens	tokens;
+
+	return (&tokens);
+}
 
 // MAIN PARSING ENVP VARIABLES FOR LATER EXPANSION
 int	main(int argc, char **argv, char **envp)

@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 10:21:52 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/07 23:40:50 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/25 20:18:03 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ struct					s_tokens
 	int					d_quoted;
 	int					skip;
 	char				*str;
+	int					*aspas;
+	int					*plicas;
 	t_TokenType			type;
 	t_tokens			*next;
 };

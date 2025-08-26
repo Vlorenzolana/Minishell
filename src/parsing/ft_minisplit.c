@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 12:51:29 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/07 23:42:53 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:50:05 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,7 @@ size_t	splitted_len(const char *s, char c)
 static int	handle_open_check(const char *s, size_t k, size_t j, char **array)
 {
 	char	*tmp;
-	int d_quote;
-	int s_quote;
 
-	d_quote = 0;
-	s_quote = 0;
 	tmp = ft_substr(s, k, j - k);
 	if (!tmp)
 		return (0);
@@ -101,7 +97,9 @@ size_t	count_splitted(const char *s, char c)
 char	**ft_minisplit(const char *s, char c, size_t *n)
 {
 	char	**array;
-
+/* 	t_tokens *tokens;
+	
+	tokens = get_tokens(); */
 	if (s == NULL)
 		return (NULL);
 	s = skip_space(s);
