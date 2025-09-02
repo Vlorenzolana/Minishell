@@ -38,7 +38,7 @@ TEST_D = main_test_d.c
 # ─────────────────────────────────────────────────────────────
 
 CC = cc
-CFLAGS = -g3 -Iinc -Ilibft/inc -Wall -Werror -Wextra
+CFLAGS = -g3 -Iinc -Ilibft/inc 
 LDFLAGS = -lreadline -lncurses
 
 # ─────────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ all: $(NAME)
 
 $(NAME): $(LIBFT) $(AU_LIB) $(MINISHELL_EXEC_LIB) $(MINISHELL_PARSING_LIB) $(MINISHELL_SIGNALS_LIB) $(MAIN)
 	@echo "$(YELLOW)Compiling ./minishell executable...$(RESET)"
-	$(CC) $(CFLAGS) -o $(NAME) $(MAIN) $(MINISHELL_EXEC_LIB) $(MINISHELL_PARSING_LIB) $(AU_LIB) $(MINISHELL_SIGNALS_LIB) $(LIBFT) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(NAME) $(MAIN) $(MINISHELL_PARSING_LIB) $(MINISHELL_EXEC_LIB) $(AU_LIB) $(MINISHELL_SIGNALS_LIB) $(LIBFT) $(LDFLAGS)
 	@echo "$(GREEN)./minishell executable created successfully.$(RESET)"
 
 # ─────────────────────────────────────────────────────────────
@@ -127,12 +127,16 @@ fclean: clean
 	@make -C $(LIBFT_DIR) fclean
 	@echo "$(GREEN)Everything deleted successfully.$(RESET)"
 # ─────────────────────────────────────────────────────────────
-# RUN
+# RE
 # ─────────────────────────────────────────────────────────────
 
 re: fclean all
 
-run: re clean
+# ─────────────────────────────────────────────────────────────
+# RUN
+# ─────────────────────────────────────────────────────────────
+
+run: re
 	./minishell
 
 # ─────────────────────────────────────────────────────────────

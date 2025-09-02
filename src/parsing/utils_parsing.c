@@ -6,12 +6,79 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 12:51:18 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/25 20:51:32 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/01 21:22:42 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
+
+const char	*skip_space(const char *s)
+{
+	while ((*s == ' ' || *s == '\t') && *s != 0)
+		s++;
+	return (s);
+}
+
+void	update_quote_state(char c, int *in_s, int *in_d, int prev_escape)
+{
+	if (*in_s == 0 && *in_d == 0)
+	{
+		if (c == '\'')
+			*in_s = 1;
+		else if (c == '"')
+			*in_d = 1;
+	}
+	else if (*in_s == 1)
+	{
+		if (c == '\'')
+			*in_s = 0;
+	}
+	else if (*in_d == 1)
+	{
+		if (c == '"' && prev_escape == 0)
+			*in_d = 0;
+	}
+}
+
+int	is_escaped(const char *s, int i, int in_single)
+{
+	int	backslashes;
+
+	if (in_single == 1)
+		return (0);
+	backslashes = 0;
+	i--;
+	while (i >= 0 && s[i] == '\\')
+	{
+		backslashes++;
+		i--;
+	}
+	if ((backslashes % 2) == 1)
+		return (1);
+	return (0);
+}
+
+size_t	quoted_field_len(const char *s, char c)
+{
+	size_t	len;
+	int		in_s;
+	int		in_d;
+	int		esc;
+
+	len = 0;
+	in_s = 0;
+	in_d = 0;
+	while (s[len] != '\0')
+	{
+		esc = is_escaped(s, (int)len, in_s);
+		if (s[len] == c && in_s == 0 && in_d == 0)
+			break ;
+		update_quote_state(s[len], &in_s, &in_d, esc);
+		len++;
+	}
+	return (len);
+}
 
 int	is_path(const char *str)
 {
@@ -35,47 +102,4 @@ int	ft_lstadd_front2(t_pipes **lst, t_pipes *new)
 	new->next = *lst;
 	*lst = new;
 	return (0);
-}
-
-const char	*skip_space(const char *s)
-{
-	while (*s == ' ' && *s == '\t' && *s != 0)
-		s++;
-	return (s);
-}
-
-size_t	is_open(const char *s)
-{
-	int		i;
-	bool	is_single_quote;
-	bool	is_double_quote;
-	t_tokens *tokens;
-	
-	is_single_quote = false;
-	is_double_quote = false;
-	tokens = get_tokens();
-	i = 0; int j = 0; int k = 0; tokens->plicas = malloc(2); tokens->aspas = malloc(2); //puntero tiene dos posiciones
-	while (s[i])
-	{
-		if (s[i] == '\'' && (s[i - 1] != '\\') && !is_double_quote)
-		{
-			is_single_quote = !is_single_quote;
-			tokens->plicas[j] = i;
-			printf("plicas %d\n", tokens->plicas[j]);
-			j++;
-		}
-		else if (s[i] == '"' && (s[i - 1] != '\\') && !is_single_quote)
-		{
-			is_double_quote = !is_double_quote;
-			tokens->aspas[k] = i;
-			printf("aspas %d\n", tokens->aspas[k]);
-			k++;		
-		}
-		i++;
-	}
-	if (!is_single_quote)
-		tokens->s_quoted = 1;
-	if (!is_double_quote)
-		tokens->d_quoted = 1;
-	return (is_single_quote || is_double_quote);
 }

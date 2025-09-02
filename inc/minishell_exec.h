@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:32:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/05 18:14:13 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/01 23:37:17 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,10 +184,9 @@ void					child_process(t_data *data, t_cmd *cmd, size_t i);
 // src/cmd_execution/execute_pipeline.c
 void					execute_pipeline(t_data *data);
 
-// src/cmd_execution/cmd_type_utils.c
-t_cmd					*new_cmd(void);
-size_t					number_of_cmds(t_cmd *first_cmd);
+// CMD TYPE UTILS
 void					free_cmd_list(t_cmd *cmd);
-t_cmd					*last_cmd(t_cmd *cmd);
+t_cmd					*last_cmd(t_cmd *head);
+size_t					number_of_cmds(t_cmd *head);
 
 #endif

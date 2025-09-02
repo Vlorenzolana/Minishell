@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_type_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:46:09 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/05 17:27:48 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/01 23:53:58 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,60 +17,62 @@ t_cmd	*new_cmd(void)
 {
 	t_cmd	*cmd;
 
-	cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
+	cmd = (t_cmd *)malloc(sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
 	cmd->args = NULL;
 	cmd->file_in = NULL;
 	cmd->file_out = NULL;
 	cmd->append_out = false;
-	cmd->pid = 0;
+	cmd->pid = -1;
 	cmd->next = NULL;
 	return (cmd);
 }
 
-size_t	number_of_cmds(t_cmd *first_cmd)
+t_cmd	*last_cmd(t_cmd *head)
 {
-	size_t	size;
-
-	if (!first_cmd)
-		return (0);
-	size = 0;
-	while (first_cmd)
-	{
-		size++;
-		first_cmd = first_cmd->next;
-	}
-	return (size);
+	if (!head)
+		return (NULL);
+	while (head->next)
+		head = head->next;
+	return (head);
 }
 
+size_t	number_of_cmds(t_cmd *head)
+{
+	size_t	n;
+
+	n = 0;
+	while (head)
+	{
+		++n;
+		head = head->next;
+	}
+	return (n);
+}
+
+/* Pedida por main_utils.c, pipeline_processes.c, builtin_exit.c, etc. */
 void	free_cmd_list(t_cmd *cmd)
 {
-	t_cmd	*next;
+	t_cmd	*tmp;
+	size_t	i;
 
 	while (cmd)
 	{
-		next = cmd->next;
+		tmp = cmd->next;
 		if (cmd->args)
-			free_array(cmd->args);
+		{
+			i = 0;
+			while (cmd->args[i])
+				free(cmd->args[i++]);
+			free(cmd->args);
+		}
 		if (cmd->file_in)
 			free(cmd->file_in);
 		if (cmd->file_out)
 			free(cmd->file_out);
+		/* No liberar: append_out (bool), pid (pid_t) */
 		free(cmd);
-		cmd = next;
+		cmd = tmp;
 	}
-}
-
-t_cmd	*last_cmd(t_cmd *cmd)
-{
-	if (!cmd)
-		return (NULL);
-	while (cmd)
-	{
-		if (cmd->next == NULL)
-			return (cmd);
-		cmd = cmd->next;
-	}
-	return (NULL);
 }

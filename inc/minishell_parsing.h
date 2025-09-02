@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 10:21:52 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/25 20:18:03 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/01 23:37:04 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ typedef enum t_TokenType
 	ARG,
 	ERROR
 }						t_TokenType;
+
 // PIPES
 typedef struct s_pipes
 {
@@ -82,8 +83,6 @@ struct					s_tokens
 	int					d_quoted;
 	int					skip;
 	char				*str;
-	int					*aspas;
-	int					*plicas;
 	t_TokenType			type;
 	t_tokens			*next;
 };
@@ -117,25 +116,28 @@ typedef struct s_cleanup_args
 //////////////////////////////////
 
 // UTILS INIT & HANDLE
+t_tokens				*new_token(char *str);
+t_cmd					*new_cmd(void);
 int						handle_token_alloc_fail(char **segments, char *line);
 t_pipes					*init_struct(t_pipes *args);
-int						init_pipe_segments(char *line, char ***segments,
-							size_t *n);
+int						init_pipe_segments(char *line, char ***segments, size_t *n);
 t_tokens				**init_tokens_by_segment(size_t count);
+void					print_history(void);
 
 // UTILS CLEAN STRUCTS
-
+int						is_exit_command(char **line, t_data *data);
 t_pipes					*clean_struct(t_pipes *args);
 void					free_tokens_list(t_tokens *head);
-int						is_exit_command(char **line, t_data *data);
 void					cleanup(char **segments, t_tokens **tokens, size_t n);
+void					free_cmd_list(t_cmd *cmd);
 
 // FT-MINI-SPLIT
 size_t					splitted_len(const char *s, char c);
 char					**split2array(const char *s, char c, char **array,
 							size_t w_count);
 char					**ft_minisplit(const char *s, char c, size_t *n);
-size_t					count_splitted(const char *s, char c);
+size_t					count_splitted(char *s, char c);
+size_t					quoted_field_len(const char *s, char c);
 
 // UTILS PARSING
 int						is_path(const char *str);
@@ -144,6 +146,9 @@ int						ft_lstadd_front2(t_pipes **lst, t_pipes *new);
 int						ft_lstadd_front2(t_pipes **lst, t_pipes *new);
 const char				*skip_space(const char *s);
 size_t					is_open(const char *s);
+int						is_escaped(const char *s, int i, int in_single);
+void					update_quote_state(char c, int *in_s, int *in_d, int prev_escape);
+
 
 // FT_CLASIFY TOKENS
 t_TokenType				clasify_token(const char *str);
@@ -190,7 +195,7 @@ size_t					handle_variable(const char *str, size_t i,
 // UTILS HEREDOC
 int						process_heredoc_runtime(const char *delimiter);
 
-// GET TOKENS EVERYWHEREEEE
+// GET TOKENS EVERYWHERE
 t_tokens				*get_tokens(void);
 
 #endif
