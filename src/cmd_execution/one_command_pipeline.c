@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   one_command_pipeline.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:26:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/05 17:28:15 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/08 08:04:53 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	one_cmd_pipeline(t_data *data)
 	cmd = data->first_cmd;
 	if (!cmd)
 		return ;
-	if (is_builtin(cmd->args[0], data))
+	 if (is_builtin(cmd->args[0]))
 		one_builtin_with_redir(data, cmd);
 	else
 	{

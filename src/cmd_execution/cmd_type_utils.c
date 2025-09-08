@@ -6,12 +6,25 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:46:09 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/01 23:53:58 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/07 23:36:04 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
+
+// Export; environment data resync,util before execve
+int	ensure_envp_exec(t_data *data)
+{
+	if (!data)
+		return (1);
+	if (!data->envp_exec)
+	{
+		if (env_resync_array(&(data->envp_exec), data->shell_envp))
+			return (1);
+	}
+	return (0);
+}
 
 t_cmd	*new_cmd(void)
 {
@@ -36,19 +49,6 @@ t_cmd	*last_cmd(t_cmd *head)
 	while (head->next)
 		head = head->next;
 	return (head);
-}
-
-size_t	number_of_cmds(t_cmd *head)
-{
-	size_t	n;
-
-	n = 0;
-	while (head)
-	{
-		++n;
-		head = head->next;
-	}
-	return (n);
 }
 
 /* Pedida por main_utils.c, pipeline_processes.c, builtin_exit.c, etc. */

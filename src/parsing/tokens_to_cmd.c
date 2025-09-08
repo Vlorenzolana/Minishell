@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 16:44:09 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/06 18:32:10 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/07 19:28:33 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,8 @@ static int	fill_cmd_args(t_cmd *cmd, t_tokens *tokens)
 			|| tokens->type == SETTING)
 		{
 			cmd->args[idx] = ft_strdup(tokens->str);
-			if (tokens->type == COMMAND)
-				strip_quotes_inplace(cmd->args[idx]);
+			if (!cmd->args[idx])
+				return (-1);
 			idx++;
 		}
 		else if (tokens->type == RED_IN || tokens->type == RED_OUT

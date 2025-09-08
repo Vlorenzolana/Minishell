@@ -3,92 +3,95 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:20:39 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/08/05 21:26:07 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/07 23:49:25 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-static bool	valid_export_arg(char *arg)
+static int	valid_export_arg(char *arg)
 {
 	int		i;
-	bool	name;
+	int		name;
 
-	if (!ft_strchr(arg, '='))
-		return (false);
+	if (!arg || !ft_strchr(arg, '='))
+		return (0);
 	i = 0;
-	name = true;
+	name = 1;
 	while (arg[i])
 	{
 		if (name && !ft_isalnum(arg[i]) && arg[i] != '_' && arg[i] != '=')
-			return (false);
+			return (0);
 		if (arg[i] == '=')
-			name = false;
+			name = 0;
 		i++;
 	}
-	return (true);
+	return (1);
 }
 
-static void	unvalid_arg_error(char *arg)
+static int	split_name_value(char *arg, char **name, char **value)
+{
+	char	*eq;
+
+	*name = NULL;
+	*value = NULL;
+	if (!arg)
+		return (1);
+	eq = ft_strchr(arg, '=');
+	if (!eq)
+		return (1);
+	*name = ft_substr(arg, 0, (size_t)(eq - arg));
+	*value = ft_strdup(eq + 1);
+	if (!*name || !*value)
+		return (free(*name), free(*value), 1);
+	return (0);
+}
+
+static int	export_one(char *arg, t_env **env)
+{
+	char	*name;
+	char	*value;
+	int		err;
+
+	if (split_name_value(arg, &name, &value))
+		return (1);
+	err = env_set(env, name, value);
+	free(name);
+	free(value);
+	return (err);
+}
+
+static void	print_invalid(char *arg)
 {
 	ft_putstr_fd("bash: export: '", 2);
 	ft_putstr_fd(arg, 2);
 	ft_putstr_fd("': not a valid identifier \n", 2);
 }
 
-static void	export_one(char	*arg, t_env **shell_envp, size_t name_len)
-{
-	t_env	*tmp;
-
-	tmp = *shell_envp;
-	while (tmp)
-	{
-		if (!ft_strncmp(tmp->name, arg, name_len)
-			&& !ft_strncmp(tmp->name, arg, ft_strlen(tmp->name)))
-		{
-			free(tmp->value);
-			tmp->value = get_envp_value(arg);
-			return ;
-		}
-		tmp = tmp->next;
-	}
-	tmp = new_shell_envp(arg, true);
-	if (!tmp)
-	{
-		error_msg(MALLOC_ERROR);
-		return ;
-	}
-	add_shell_envp(shell_envp, tmp);
-}
-
 int	shell_export(char **args, t_data *data)
 {
-	size_t		name_len;
-	t_env		**shell_envp;
-	int			i;
-	int			status;
+	int	i;
+	int	status;
+	int	changed;
 
 	if (!args || !args[0])
 		return (EXIT_SUCCESS);
-	shell_envp = &(data->shell_envp);
 	i = 0;
 	status = 0;
+	changed = 0;
 	while (args[i])
 	{
 		if (!valid_export_arg(args[i]))
-		{
-			unvalid_arg_error(args[i]);
-			status = 1;
-			i++;
-			continue ;
-		}
-		name_len = ft_strchr(args[i], '=') - &args[i][0];
-		export_one(args[i], shell_envp, name_len);
+			(print_invalid(args[i]), status = 1);
+		else if (export_one(args[i], &(data->shell_envp)) == 0)
+			changed = 1;
 		i++;
 	}
+	if (changed && env_resync_array(&(data->envp_exec), data->shell_envp))
+		status = 1;
 	return (status);
 }

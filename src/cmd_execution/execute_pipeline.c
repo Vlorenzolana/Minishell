@@ -3,40 +3,55 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipeline.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:23:11 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/07/28 17:19:31 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/08 00:54:50 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
+static int	open_next_pipe(t_data *data, size_t i)
+{
+	if (i < (size_t)(data->nbr_cmds - 1))
+	{
+		if (pipe(data->pipes[i % 2]) == -1)
+		{
+			error_msg(PIPE_ERROR);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+static void	cmd_iter(t_data *data, t_cmd *cmd, size_t i)
+{
+	if (open_next_pipe(data, i))
+		return ;
+	cmd->pid = fork();
+	if (cmd->pid == -1)
+	{
+		error_msg(FORK_ERROR);
+		return ;
+	}
+	if (cmd->pid == 0)
+		child_process(data, cmd, i);
+	else
+		parent_process(data, cmd, i);
+}
+
 static void	cmd_loop(t_data *data, t_cmd *cmd)
 {
 	size_t	i;
 
 	i = 0;
-	while (cmd && i < data->nbr_cmds)
+	while (cmd)
 	{
-		if (pipe(data->pipes[i % 2]) == -1)
-		{
-			error_msg(PIPE_ERROR);
-			return ;
-		}
-		cmd->pid = fork();
-		if (cmd->pid == -1)
-		{
-			error_msg(FORK_ERROR);
-			return ;
-		}
-		else if (cmd->pid)
-			parent_process(data, cmd, i);
-		else
-			child_process(data, cmd, i);
-		i++;
+		cmd_iter(data, cmd, i);
 		cmd = cmd->next;
+		i++;
 	}
 }
 

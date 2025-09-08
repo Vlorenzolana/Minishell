@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 20:35:00 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/08/05 20:22:13 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/07 18:25:29 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,74 +15,124 @@
 #include "minishell_parsing.h"
 #include "minishell_signals.h"
 
-void	append_char_to_result(char **result, char c)
+static int	is_name_char(int c)
 {
-	char	buffer[2];
-
-	buffer[0] = c;
-	buffer[1] = '\0';
-	*result = ft_strjoin_free(*result, buffer);
+	if (ft_isalnum(c))
+		return (1);
+	if (c == '_')
+		return (1);
+	return (0);
 }
 
-char	*expand_loop(const char *str, t_env *env, int last_status, char *result)
+static int	append_status(char **out, int last_status)
+{
+	char	*num;
+
+	num = ft_itoa(last_status);
+	if (!num)
+		return (1);
+	*out = ft_strjoin_free(*out, num);
+	free(num);
+	if (!*out)
+		return (1);
+	return (0);
+}
+
+static int	append_var(char **out, const char *s, t_env *env, size_t *i)
+{
+	size_t	start;
+	char	*name;
+	char	*val;
+
+	if (!s[*i + 1])
+		return ((*out = ft_strjoin_char_free(*out, '$')) == NULL);
+	if (s[*i + 1] == '?')
+		return (0);
+	start = *i + 1;
+	while (s[start] && is_name_char(s[start]))
+		start++;
+	if (start == *i + 1)
+		return ((*out = ft_strjoin_char_free(*out, '$')) == NULL);
+	name = ft_substr(s, *i + 1, start - (*i + 1));
+	if (!name)
+		return (1);
+	val = get_env_value_from_list(name, env);
+	free(name);
+	if (!val)
+		val = "";
+	*out = ft_strjoin_free(*out, val);
+	if (!*out)
+		return (1);
+	*i = start;
+	return (0);
+}
+
+static char	*expand_core(const char *s, t_env *env, int last_status)
 {
 	size_t	i;
+	int		sq;
+	int		dq;
+	char	*out;
 
 	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '$' && str[i + 1])
-		{
-			if (str[i + 1] == '?')
-			{
-				i += 2;
-				if (handle_exit_status(&result, last_status))
-					break ;
-				continue ;
-			}
-			if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
-			{
-				i = handle_variable(str, ++i, &result, env);
-				continue ;
-			}
-		}
-		append_char_to_result(&result, str[i++]);
-	}
-	return (result);
-}
-
-char	*expand_variables(const char *str, t_env *env, int was_quoted,
-		int last_status)
-{
-	char	*result;
-
-	result = ft_strdup("");
-	if (!result)
+	sq = 0;
+	dq = 0;
+	out = ft_strdup("");
+	if (!out)
 		return (NULL);
-	result = expand_loop(str, env, last_status, result);
-	if (was_quoted == 2)
+	while (s[i])
 	{
-		free(result);
-		return (ft_strdup(str));
+		if (s[i] == '\'' && !dq && (i++ || 1))
+			sq = !sq;
+		else if (s[i] == '\"' && !sq && (i++ || 1))
+			dq = !dq;
+		else if (s[i] == '$' && !sq && s[i + 1] == '?' && (i += 2))
+		{
+			if (append_status(&out, last_status))
+				return (free(out), NULL);
+		}
+		else if (s[i] == '$' && !sq)
+		{
+			if (append_var(&out, s, env, &i))
+				return (free(out), NULL);
+		}
+		else
+		{
+			out = ft_strjoin_char_free(out, s[i++]);
+			if (!out)
+				return (NULL);
+		}
 	}
-	return (result);
+	return (out);
 }
 
-void	expand_tokens(t_tokens *tokens, t_env *env, int last_status)
+/* Nota: ignoramos was_quoted anterior; hacerlo char-a-char resuelve casos
+ * mixtos como foo"$USER"bar. Las comillas no se copian => ya salen strippeadas.
+ */
+char	*expand_variables(const char *s, t_env *env, int was_quoted, int status)
 {
-	t_tokens	*tmp;
-	char		*expanded;
+	char	*out;
 
-	tmp = tokens;
-	while (tmp)
+	(void)was_quoted;
+	out = expand_core(s, env, status);
+	return (out);
+}
+
+void	expand_tokens(t_tokens *tks, t_env *env, int last_status)
+{
+	char	*new_s;
+
+	while (tks)
 	{
-		if (tmp->str && tmp->type != ERROR)
+		if (tks->str && tks->type != ERROR)
 		{
-			expanded = expand_variables(tmp->str, env, tmp->was_quoted,
+			new_s = expand_variables(tks->str, env, tks->was_quoted,
 					last_status);
-			free(tmp->str);
-			tmp->str = expanded;
+			if (!new_s)
+				return ;
+			free(tks->str);
+			tks->str = new_s;
 		}
-		tmp = tmp->next;
+		tks = tks->next;
 	}
 }

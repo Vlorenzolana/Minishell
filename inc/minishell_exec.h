@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:32:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/01 23:37:17 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/08 07:59:34 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include "libft.h"
 # include "minishell_parsing.h"
 # include "minishell_signals.h"
+#include <errno.h>
 # include <dirent.h>
 # include <fcntl.h>
 # include <limits.h>
@@ -93,6 +94,7 @@ struct					s_data
 	t_tokens			**tokens_by_segment;
 	size_t				nbr_cmds;
 	int					last_status;
+	char        		**envp_exec; 
 };
 
 ////////////////////////////////////////////////
@@ -102,12 +104,15 @@ struct					s_data
 //	src/error_messages/error_message.c
 int						error_msg(t_err error_code);
 int						error_msg_arg(t_err error_code, char *arg);
-void					error_msg_exit(t_err error_code);
+/* void					error_msg_exit(t_err error_code); */
 int						syntax_error(char *token);
 
 ////////////////////////////////////////////////
 //------ENVIRONMENT-----------------------------
 ////////////////////////////////////////////////
+
+// src/environment/envp_set
+int						env_set(t_env **env, const char *name, const char *value);
 
 //	src/environment/envp_attribute_getters.c
 char					*get_envp_name(char *envp);
@@ -131,8 +136,8 @@ void					delete_shell_envp_node(t_env **shell_envp,
 void					print_shell_envp_list(t_env *shell_envp);
 int						shell_envp_list_create(char **envp, t_env **shell_envp);
 size_t					shell_envp_size(t_env *shell_envp_node);
-
-//	src/environment/shell_envp_array_create.c
+int     				env_resync_array(char ***dst_envp, t_env *list);
+void    				free_envp_array(char **envp);
 char					**shell_envp_array_create(t_env *shell_envp);
 
 ////////////////////////////////////////////////
@@ -148,7 +153,6 @@ void					free_data(t_data *data);
 //------BUILT-INS-------------------------------
 ////////////////////////////////////////////////
 
-bool					is_builtin(char *cmd, t_data *data);
 int						shell_export(char **args, t_data *data);
 int						shell_unset(char **args, t_data *data);
 int						shell_env(char **args, t_data *data);
@@ -164,10 +168,16 @@ int						shell_exit(char **args, t_data *data);
 //	src/cmd_execution/find_path.c
 char					*find_path(char **args, t_env **shell_envp);
 
-//	src/cmd_execution/command_exec.c
-int						command_exec(char **args, t_data *data);
+//	src/cmd_execution/is_builtin.c
+int						is_builtin(const char *s);
+int     				run_builtin(t_cmd *cmd, t_data *data);
 
-// src/cmd_execution/file_redirections.c
+//	src/cmd_execution/command_exec.c
+void					command_exec(t_cmd *cmd, t_data *data);
+void					err_cmd_not_found(const char *name, t_data *data);
+char					*resolve_exec_path(t_cmd *cmd, t_data *data);
+int						check_exec_preflight(const char *path, t_data *data);
+void					run_execve_handle(const char *path, t_cmd *cmd, t_data *data);// src/cmd_execution/file_redirections.c
 void					file_in_redir(t_cmd *cmd);
 void					file_out_redir(t_cmd *cmd);
 
@@ -185,6 +195,7 @@ void					child_process(t_data *data, t_cmd *cmd, size_t i);
 void					execute_pipeline(t_data *data);
 
 // CMD TYPE UTILS
+int 					ensure_envp_exec(t_data *data);
 void					free_cmd_list(t_cmd *cmd);
 t_cmd					*last_cmd(t_cmd *head);
 size_t					number_of_cmds(t_cmd *head);

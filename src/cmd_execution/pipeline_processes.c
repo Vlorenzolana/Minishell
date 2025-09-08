@@ -3,50 +3,83 @@
 /*                                                        :::      ::::::::   */
 /*   pipeline_processes.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 17:18:35 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/07/28 18:16:13 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/08 00:55:12 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-void	parent_process(t_data *data, t_cmd *cmd, size_t i)
+static void	close_safe(int *fd)
 {
-	int	status;
-
-	if (i > 0)
+	if (fd && *fd >= 0)
 	{
-		close(data->pipes[(i + 1) % 2][R_PIPE]);
-		close(data->pipes[(i + 1) % 2][W_PIPE]);
+		close(*fd);
+		*fd = -1;
 	}
-	status = 0;
-	waitpid(cmd->pid, &status, 0);
-	if (WIFEXITED(status))
-		data->last_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		data->last_status = 128 + WTERMSIG(status);
+}
+
+static void	child_stdio(t_data *d, size_t i)
+{
+	int	read_fd;
+	int	write_fd;
+
+	read_fd = (i == 0) ? -1 : d->pipes[(i + 1) % 2][R_PIPE];
+	write_fd = (i == (size_t)(d->nbr_cmds - 1)) ? -1 : d->pipes[i % 2][W_PIPE];
+	if (read_fd >= 0)
+		dup2(read_fd, STDIN_FILENO);
+	if (write_fd >= 0)
+		dup2(write_fd, STDOUT_FILENO);
+	close_safe(&d->pipes[0][R_PIPE]);
+	close_safe(&d->pipes[0][W_PIPE]);
+	close_safe(&d->pipes[1][R_PIPE]);
+	close_safe(&d->pipes[1][W_PIPE]);
 }
 
 void	child_process(t_data *data, t_cmd *cmd, size_t i)
 {
+	child_stdio(data, i);
+	if (file_in_redir(cmd) < 0 || file_out_redir(cmd) < 0)
+		_exit(1);
+	command_exec(cmd, data);
+	_exit(data->last_status);
+}
+
+static void	wait_all_children(t_data *data, t_cmd *head)
+{
+	int		st;
+	int		status;
+	t_cmd	*cur;
+
+	status = 0;
+	cur = head;
+	while (cur)
+	{
+		if (cur->pid > 0 && waitpid(cur->pid, &st, 0) > 0)
+		{
+			if (WIFEXITED(st))
+				status = WEXITSTATUS(st);
+			else if (WIFSIGNALED(st))
+				status = 128 + WTERMSIG(st);
+		}
+		cur = cur->next;
+	}
+	data->last_status = status;
+}
+
+void	parent_process(t_data *data, t_cmd *cmd, size_t i)
+{
 	if (i > 0)
-		dup2(data->pipes[(i + 1) % 2][R_PIPE], STDIN_FILENO);
-	if (i < (data->nbr_cmds - 1))
-		dup2(data->pipes[i % 2][W_PIPE], STDOUT_FILENO);
-	if (cmd->file_in)
+		close_safe(&data->pipes[(i + 1) % 2][R_PIPE]);
+	if (cmd->next == NULL)
 	{
-		file_in_redir(cmd);
+		close_safe(&data->pipes[0][R_PIPE]);
+		close_safe(&data->pipes[0][W_PIPE]);
+		close_safe(&data->pipes[1][R_PIPE]);
+		close_safe(&data->pipes[1][W_PIPE]);
+		wait_all_children(data, data->first_cmd);
 	}
-	if (cmd->file_out)
-	{
-		file_out_redir(cmd);
-	}
-	close_pipes(data);
-	command_exec(cmd->args, data);
-	free_cmd_list(data->first_cmd);
-	free_data(data);
-	exit(EXIT_SUCCESS);
 }

@@ -6,10 +6,10 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:25:36 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/07/28 20:26:28 by vlorenzo         ###   ########.fr       */
-/*   Updated: 2025/07/28 21:46:52 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/07 23:39:31 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
@@ -28,6 +28,7 @@ int	data_init(t_data *data, char **envp)
 	data->first_cmd = NULL;
 	data->nbr_cmds = 0;
 	data->last_status = 0;
+	data->envp_exec = NULL;
 	data->nbr_cmds = 0;
 	data->pipes[0][R_PIPE] = -1;
 	data->pipes[0][W_PIPE] = -1;
@@ -39,6 +40,8 @@ int	data_init(t_data *data, char **envp)
 		data->shell_envp = NULL;
 		return (EXIT_FAILURE);
 	}
+	if (env_resync_array(&data->envp_exec, data->shell_envp))
+    	return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
 
@@ -56,6 +59,8 @@ void	close_pipes(t_data *data)
 
 void	free_data(t_data *data)
 {
+	free_envp_array(data->envp_exec);
+	data->envp_exec = NULL;
 	free_shell_envp_list(&(data->shell_envp));
 	rl_clear_history();
 }

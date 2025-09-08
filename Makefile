@@ -19,7 +19,6 @@ EXEC_SRCS = $(wildcard src/cmd_execution/*.c) \
             $(wildcard src/minishell_data/*.c) \
             $(wildcard src/minishell_exec/*.c) \
 			 $(wildcard src/main_utils.c)
-
 EXEC_OBJS = $(EXEC_SRCS:.c=.o)
 
 MINISHELL_PARSING_LIB = ./inc/minishell_parsing.a
@@ -53,9 +52,16 @@ all: $(NAME)
 
 $(NAME): $(LIBFT) $(AU_LIB) $(MINISHELL_EXEC_LIB) $(MINISHELL_PARSING_LIB) $(MINISHELL_SIGNALS_LIB) $(MAIN)
 	@echo "$(YELLOW)Compiling ./minishell executable...$(RESET)"
-	$(CC) $(CFLAGS) -o $(NAME) $(MAIN) $(MINISHELL_PARSING_LIB) $(MINISHELL_EXEC_LIB) $(AU_LIB) $(MINISHELL_SIGNALS_LIB) $(LIBFT) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(NAME) $(MAIN) \
+		-Wl,--start-group \
+			$(MINISHELL_EXEC_LIB) \
+			$(MINISHELL_PARSING_LIB) \
+			$(AU_LIB) \
+			$(MINISHELL_SIGNALS_LIB) \
+			$(LIBFT) \
+		-Wl,--end-group \
+		$(LDFLAGS)
 	@echo "$(GREEN)./minishell executable created successfully.$(RESET)"
-
 # ─────────────────────────────────────────────────────────────
 # GDB DEBUGGING V VLORENZO
 # ─────────────────────────────────────────────────────────────
