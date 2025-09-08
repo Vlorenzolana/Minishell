@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 17:18:35 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 00:55:12 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:11:54 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	child_process(t_data *data, t_cmd *cmd, size_t i)
 	if (file_in_redir(cmd) < 0 || file_out_redir(cmd) < 0)
 		_exit(1);
 	command_exec(cmd, data);
-	_exit(data->last_status);
+	exit(data->last_status);
 }
 
 static void	wait_all_children(t_data *data, t_cmd *head)

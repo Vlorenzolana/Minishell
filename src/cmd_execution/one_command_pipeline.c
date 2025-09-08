@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:26:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 08:04:53 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:39:45 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	child(t_data *data, t_cmd *cmd)
 		file_in_redir(cmd);
 	if (cmd->file_out)
 		file_out_redir(cmd);
-	command_exec(cmd->args, data);
+	command_exec(cmd, data);
 	free_cmd_list(data->first_cmd);
 	free_data(data);
 	exit(EXIT_SUCCESS);

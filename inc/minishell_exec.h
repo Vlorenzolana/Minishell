@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:32:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 07:59:34 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 00:12:01 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,14 +131,24 @@ void					add_shell_envp(t_env **env_list, t_env *new_node);
 void					free_shell_envp_list(t_env **shell_envp);
 void					delete_shell_envp_node(t_env **shell_envp,
 							char *VAR_NAME);
+size_t					shell_envp_size(t_env *shell_envp_node);
 
-//	src/environment/shell_envp_list_create.c
+//	src/environment/shell_envp_array_resync.c 
+int						rebuild_array_visible(char ***dst_envp, t_env *env_list);
+void					ft_free_split(char **arr);
+int						resync_env_array(char ***dst_envp, t_env *list);
+
+//	src/environment/shell_envp_array_utils.c
+int						env_count(t_env *env);
+char					*env_build_kv(t_env *e);
+char					**env_to_array(t_env *list);
+void					free_envp_array(char **envp);
+char					**env_to_array(t_env *list);
+
+//	src/shell_envp_list_create.c
 void					print_shell_envp_list(t_env *shell_envp);
 int						shell_envp_list_create(char **envp, t_env **shell_envp);
-size_t					shell_envp_size(t_env *shell_envp_node);
-int     				env_resync_array(char ***dst_envp, t_env *list);
-void    				free_envp_array(char **envp);
-char					**shell_envp_array_create(t_env *shell_envp);
+
 
 ////////////////////////////////////////////////
 //------MINISHELL_DATA--------------------------
@@ -178,8 +188,8 @@ void					err_cmd_not_found(const char *name, t_data *data);
 char					*resolve_exec_path(t_cmd *cmd, t_data *data);
 int						check_exec_preflight(const char *path, t_data *data);
 void					run_execve_handle(const char *path, t_cmd *cmd, t_data *data);// src/cmd_execution/file_redirections.c
-void					file_in_redir(t_cmd *cmd);
-void					file_out_redir(t_cmd *cmd);
+int					file_in_redir(t_cmd *cmd);
+int					file_out_redir(t_cmd *cmd);
 
 // src/cmd_execution/one_builtin_with_redir.c
 void					one_builtin_with_redir(t_data *data, t_cmd *cmd);

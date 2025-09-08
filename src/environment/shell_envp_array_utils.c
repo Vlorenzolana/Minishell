@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shell_env_array_sync.c                             :+:      :+:    :+:   */
+/*   shell_envp_array_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/07 22:11:17 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/09/08 00:57:31 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/08 23:23:18 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-static int	env_count(t_env *e)
+int	env_count(t_env *env)
 {
-	int	n;
+	int	n = 0;
 
-	n = 0;
-	while (e)
+	while (env)
 	{
 		n++;
-		e = e->next;
+		env = env->next;
 	}
 	return (n);
 }
 
-static char	*env_build_kv(t_env *e)
+char	*env_build_kv(t_env *e)
 {
 	char	*kv;
 	char	*tmp;
@@ -41,7 +40,19 @@ static char	*env_build_kv(t_env *e)
 	return (kv);
 }
 
-static char	**env_to_array(t_env *list)
+void	free_envp_array(char **envp)
+{
+	int	i;
+
+	if (!envp)
+		return ;
+	i = 0;
+	while (envp[i])
+		free(envp[i++]);
+	free(envp);
+}
+
+char	**env_to_array(t_env *list)
 {
 	int		i;
 	int		n;
@@ -56,51 +67,10 @@ static char	**env_to_array(t_env *list)
 	{
 		arr[i] = env_build_kv(list);
 		if (!arr[i])
-			return (free_envp_array(arr), (char **)NULL);
+			return (free_envp_array(arr), NULL);
 		i++;
 		list = list->next;
 	}
 	arr[i] = NULL;
 	return (arr);
-}
-
-void	free_envp_array(char **envp)
-{
-	int	i;
-
-	if (!envp)
-		return ;
-	i = 0;
-	while (envp[i])
-	{
-		free(envp[i]);
-		i++;
-	}
-	free(envp);
-}
-
-int	resync_envp_array(char ***dst_envp, t_env *list)
-{
-	char	**fresh;
-
-	if (!dst_envp)
-		return (1);
-	fresh = env_to_array(list);
-	if (!fresh)
-		return (1);
-	free_envp_array(*dst_envp);
-	*dst_envp = fresh;
-	return (0);
-}
-
-int	ensure_envp_exec(t_data *data)
-{
-	if (!data)
-		return (1);
-	if (!data->envp_exec)
-	{
-		if (resync_envp_array(&(data->envp_exec), data->shell_envp))
-			return (1);
-	}
-	return (0);
 }

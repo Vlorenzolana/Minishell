@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   file_redirections.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 17:44:44 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/07/28 19:16:50 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:38:10 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-void	file_in_redir(t_cmd *cmd)
+int	file_in_redir(t_cmd *cmd)
 {
 	int	fd_in;
 
@@ -23,9 +23,10 @@ void	file_in_redir(t_cmd *cmd)
 	if (dup2(fd_in, STDIN_FILENO) < 0)
 		exit(error_msg(DUP_ERROR));
 	close(fd_in);
+	return(fd_in);
 }
 
-void	file_out_redir(t_cmd *cmd)
+int	file_out_redir(t_cmd *cmd)
 {
 	int	fd_out;
 
@@ -38,4 +39,5 @@ void	file_out_redir(t_cmd *cmd)
 	if (dup2(fd_out, STDOUT_FILENO) < 0)
 		exit(error_msg(DUP_ERROR));
 	close(fd_out);
+	return(fd_out);
 }
