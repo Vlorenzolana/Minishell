@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 17:54:49 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 23:59:12 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 07:52:55 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	shell_unset(char **args, t_data *data)
 			changed = 1;
 		i++;
 	}
-	if (changed && resync_env_array(&(data->envp_exec), data->shell_envp))
+	if (changed && env_resync_array(&(data->envp_exec), data->shell_envp))
 		return (1);
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:20:39 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 23:59:12 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 07:51:32 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 static int	valid_export_arg(char *arg)
 {
-	int		i;
-	int		name;
+	int	i;
+	int	name;
 
 	if (!arg || !ft_strchr(arg, '='))
 		return (0);
@@ -91,7 +91,7 @@ int	shell_export(char **args, t_data *data)
 			changed = 1;
 		i++;
 	}
-	if (changed && resync_env_array(&(data->envp_exec), data->shell_envp))
+	if (changed && env_resync_array(&(data->envp_exec), data->shell_envp))
 		status = 1;
 	return (status);
 }

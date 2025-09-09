@@ -6,13 +6,12 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 14:02:44 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 08:05:10 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 07:50:51 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
-
 
 int	is_builtin(const char *s)
 {

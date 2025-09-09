@@ -13,43 +13,31 @@
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-int	env_count(t_env *env)
+static int	env_count(t_env *e)
 {
-	int	n = 0;
+	int	n;
 
-	while (env)
+	n = 0;
+	while (e)
 	{
-		n++;
-		env = env->next;
+		if (e->name)
+			n++;
+		e = e->next;
 	}
 	return (n);
 }
 
-char	*env_build_kv(t_env *e)
+static char	*env_kv(t_env *e)
 {
 	char	*kv;
 	char	*tmp;
 
-	if (!e || !e->name)
-		return (NULL);
 	tmp = ft_strjoin(e->name, "=");
 	if (!tmp)
 		return (NULL);
 	kv = ft_strjoin(tmp, e->value ? e->value : "");
 	free(tmp);
 	return (kv);
-}
-
-void	free_envp_array(char **envp)
-{
-	int	i;
-
-	if (!envp)
-		return ;
-	i = 0;
-	while (envp[i])
-		free(envp[i++]);
-	free(envp);
 }
 
 char	**env_to_array(t_env *list)
@@ -65,12 +53,44 @@ char	**env_to_array(t_env *list)
 	i = 0;
 	while (list)
 	{
-		arr[i] = env_build_kv(list);
-		if (!arr[i])
-			return (free_envp_array(arr), NULL);
-		i++;
+		if (list->name)
+		{
+			arr[i] = env_kv(list);
+			if (!arr[i])
+				return (free_envp_array(arr), (char **)NULL);
+			i++;
+		}
 		list = list->next;
 	}
 	arr[i] = NULL;
 	return (arr);
+}
+
+void	free_envp_array(char **envp)
+{
+	int	i;
+
+	if (!envp)
+		return ;
+	i = 0;
+	while (envp[i])
+	{
+		free(envp[i]);
+		i++;
+	}
+	free(envp);
+}
+
+int	env_resync_array(char ***dst_envp, t_env *list)
+{
+	char	**fresh;
+
+	if (!dst_envp)
+		return (1);
+	fresh = env_to_array(list);
+	if (!fresh)
+		return (1);
+	free_envp_array(*dst_envp);
+	*dst_envp = fresh;
+	return (0);
 }

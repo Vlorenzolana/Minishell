@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 17:18:35 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/08 21:11:54 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 07:49:27 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,15 @@ static void	close_safe(int *fd)
 
 static void	child_stdio(t_data *d, size_t i)
 {
-	int	read_fd;
-	int	write_fd;
+	int	rfd;
+	int	wfd;
 
-	read_fd = (i == 0) ? -1 : d->pipes[(i + 1) % 2][R_PIPE];
-	write_fd = (i == (size_t)(d->nbr_cmds - 1)) ? -1 : d->pipes[i % 2][W_PIPE];
-	if (read_fd >= 0)
-		dup2(read_fd, STDIN_FILENO);
-	if (write_fd >= 0)
-		dup2(write_fd, STDOUT_FILENO);
+	rfd = (i == 0) ? -1 : d->pipes[(i + 1) % 2][R_PIPE];
+	wfd = (i == (size_t)(d->nbr_cmds - 1)) ? -1 : d->pipes[i % 2][W_PIPE];
+	if (rfd >= 0)
+		dup2(rfd, STDIN_FILENO);
+	if (wfd >= 0)
+		dup2(wfd, STDOUT_FILENO);
 	close_safe(&d->pipes[0][R_PIPE]);
 	close_safe(&d->pipes[0][W_PIPE]);
 	close_safe(&d->pipes[1][R_PIPE]);
@@ -42,10 +42,12 @@ static void	child_stdio(t_data *d, size_t i)
 void	child_process(t_data *data, t_cmd *cmd, size_t i)
 {
 	child_stdio(data, i);
-	if (file_in_redir(cmd) < 0 || file_out_redir(cmd) < 0)
-		_exit(1);
+	if (cmd->file_in)
+		file_in_redir(cmd);
+	if (cmd->file_out)
+		file_out_redir(cmd);
 	command_exec(cmd, data);
-	exit(data->last_status);
+	_exit(data->last_status);
 }
 
 static void	wait_all_children(t_data *data, t_cmd *head)
@@ -74,6 +76,8 @@ void	parent_process(t_data *data, t_cmd *cmd, size_t i)
 {
 	if (i > 0)
 		close_safe(&data->pipes[(i + 1) % 2][R_PIPE]);
+	if (i < (size_t)(data->nbr_cmds - 1))
+		close_safe(&data->pipes[i % 2][W_PIPE]);
 	if (cmd->next == NULL)
 	{
 		close_safe(&data->pipes[0][R_PIPE]);

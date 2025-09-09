@@ -6,7 +6,7 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:32:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/09 00:12:01 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 07:55:20 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,6 @@ struct					s_data
 //	src/error_messages/error_message.c
 int						error_msg(t_err error_code);
 int						error_msg_arg(t_err error_code, char *arg);
-/* void					error_msg_exit(t_err error_code); */
 int						syntax_error(char *token);
 
 ////////////////////////////////////////////////
@@ -139,11 +138,9 @@ void					ft_free_split(char **arr);
 int						resync_env_array(char ***dst_envp, t_env *list);
 
 //	src/environment/shell_envp_array_utils.c
-int						env_count(t_env *env);
-char					*env_build_kv(t_env *e);
-char					**env_to_array(t_env *list);
 void					free_envp_array(char **envp);
 char					**env_to_array(t_env *list);
+int						env_resync_array(char ***dst_envp, t_env *list);
 
 //	src/shell_envp_list_create.c
 void					print_shell_envp_list(t_env *shell_envp);
@@ -188,8 +185,8 @@ void					err_cmd_not_found(const char *name, t_data *data);
 char					*resolve_exec_path(t_cmd *cmd, t_data *data);
 int						check_exec_preflight(const char *path, t_data *data);
 void					run_execve_handle(const char *path, t_cmd *cmd, t_data *data);// src/cmd_execution/file_redirections.c
-int					file_in_redir(t_cmd *cmd);
-int					file_out_redir(t_cmd *cmd);
+int						file_in_redir(t_cmd *cmd);
+int						file_out_redir(t_cmd *cmd);
 
 // src/cmd_execution/one_builtin_with_redir.c
 void					one_builtin_with_redir(t_data *data, t_cmd *cmd);

@@ -6,13 +6,12 @@
 /*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 01:23:41 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/09/08 01:37:43 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/09 07:47:23 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
-
 
 void	err_cmd_not_found(const char *name, t_data *data)
 {
@@ -22,7 +21,7 @@ void	err_cmd_not_found(const char *name, t_data *data)
 	data->last_status = 127;
 }
 
-int	is_directory_path(const char *path)
+static int	is_directory_path(const char *path)
 {
 	struct stat	st;
 
@@ -33,7 +32,6 @@ int	is_directory_path(const char *path)
 	return (S_ISDIR(st.st_mode));
 }
 
-/* Si trae '/', se usa tal cual; si no, busca en PATH con tu find_path(args,&env). */
 char	*resolve_exec_path(t_cmd *cmd, t_data *data)
 {
 	char	*prog;
@@ -87,13 +85,6 @@ void	run_execve_handle(const char *path, t_cmd *cmd, t_data *data)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd((char *)path, 2);
 		ft_putstr_fd(": Permission denied\n", 2);
-		data->last_status = 126;
-	}
-	else
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd((char *)path, 2);
-		ft_putstr_fd(": execution error\n", 2);
 		data->last_status = 126;
 	}
 }
