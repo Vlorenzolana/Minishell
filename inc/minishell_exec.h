@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_exec.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:32:53 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/16 15:27:16 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:00:11 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,8 @@ struct					s_data
 	t_tokens			**tokens_by_segment;
 	size_t				nbr_cmds;
 	char				**envp_exec;
+	int					in;
+	int					out;
 };
 
 ////////////////////////////////////////////////
@@ -103,7 +105,6 @@ struct					s_data
 //	src/error_messages/error_message.c
 int						error_msg(t_err error_code);
 int						error_msg_arg(t_err error_code, char *arg);
-/* void					error_msg_exit(t_err error_code); */
 int						syntax_error(char *token);
 
 ////////////////////////////////////////////////
@@ -132,6 +133,12 @@ void					free_shell_envp_list(t_env **shell_envp);
 void					delete_shell_envp_node(t_env **shell_envp,
 							char *VAR_NAME);
 size_t					shell_envp_size(t_env *shell_envp_node);
+
+//	src/environment/shell_envp_list_utils_3.c
+t_env					*copy_envp_list(t_env *shell_envp);
+
+//	src/environment/shell_envp_list_utils_4.c
+void					sort_envp_list(t_env *head);
 
 //	src/environment/shell_envp_array_resync.c 
 int						rebuild_array_visible(char ***dst_envp,
@@ -163,12 +170,14 @@ void					free_data(t_data *data);
 //------BUILT-INS-------------------------------
 ////////////////////////////////////////////////
 
+void					export_no_args(t_env *shell_envp);
 int						shell_export(char **args, t_data *data);
 int						shell_unset(char **args, t_data *data);
 int						shell_env(char **args, t_data *data);
 int						shell_echo(char **args, t_data *data);
 int						shell_cd(char **args, t_data *data);
 int						shell_pwd(char **args, t_data *data);
+int						get_exit_code(char *arg, bool *error);
 int						shell_exit(char **args, t_data *data);
 
 ////////////////////////////////////////////////

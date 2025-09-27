@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:29:51 by vlorenzo          #+#    #+#             */
-/*   Updated: 2025/09/17 12:41:49 by dalabrad         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:34:15 by vlorenzo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,22 @@
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-// RETORE STDIN/OUT
 void	restore_stdio(int in_bk, int out_bk)
 {
-	dup2(in_bk, STDIN_FILENO);
-	dup2(out_bk, STDOUT_FILENO);
-	close(in_bk);
-	close(out_bk);
+	if (in_bk >= 0)
+		dup2(in_bk, STDIN_FILENO);
+	if (out_bk >= 0)
+		dup2(out_bk, STDOUT_FILENO);
+	if (in_bk >= 0)
+		close(in_bk);
+	if (out_bk >= 0)
+		close(out_bk);
 }
 
-// RESET COMMANDS
-void	reset_cmd_state(t_data *data, t_cleanup_args *args)
+void	reset_cmd_state(t_data *data)
 {
 	free_cmd_list(data->first_cmd);
 	data->first_cmd = NULL;
-	cleanup(args->segments, args->tokens, args->count);
 }
 
 void	process_input_line(char *line, t_data *data, int in, int out)
@@ -50,30 +51,30 @@ void	process_input_line(char *line, t_data *data, int in, int out)
 	if (!tokens)
 		return ;
 	process_segments(pipe_seg, tokens, n_pipe, data);
-	execute_pipeline(data);
-	restore_stdio(in, out);
 	args.segments = pipe_seg;
 	args.tokens = tokens;
 	args.count = n_pipe;
-	reset_cmd_state(data, &args);
+	cleanup(args.segments, args.tokens, args.count);
+	execute_pipeline(data);
+	restore_stdio(in, out);
+	reset_cmd_state(data);
 }
 
 void	close_in_out(int in, int out)
 {
-	close(in);
-	close(out);
+	if (in >= 0)
+		close(in);
+	if (out >= 0)
+		close(out);
 }
 
-// MAIN LOOP CALLING SEGMENTS/PIPES FOR TOKENIZATION
 void	main_loop(t_data *data)
 {
 	char	*line;
-	int		in;
-	int		out;
 
-	in = dup(STDIN_FILENO);
-	out = dup(STDOUT_FILENO);
-	if (in < 0 || out < 0)
+	data->in = dup(STDIN_FILENO);
+	data->out = dup(STDOUT_FILENO);
+	if (data->in < 0 || data->out < 0)
 		return (perror("dup"), (void)0);
 	read_history(".minishell_history");
 	while (1)
@@ -82,7 +83,7 @@ void	main_loop(t_data *data)
 		line = readline(PROMPT);
 		if (!line)
 			shell_exit(&line, data);
-		process_input_line(line, data, in, out);
+		process_input_line(line, data, data->in, data->out);
 		if (line)
 		{
 			free(line);
@@ -91,5 +92,5 @@ void	main_loop(t_data *data)
 	}
 	write_history(".minishell_history");
 	rl_clear_history();
-	close_in_out(in, out);
+	close_in_out(data->in, data->out);
 }

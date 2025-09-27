@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vlorenzo <vlorenzo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:10:22 by dalabrad          #+#    #+#             */
-/*   Updated: 2025/09/19 21:44:53 by vlorenzo         ###   ########.fr       */
+/*   Updated: 2025/09/21 11:39:17 by dalabrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell_exec.h"
 #include "minishell_parsing.h"
 
-static int is_echo_n_flag(const char *s)
+static int	is_echo_n_flag(const char *s)
 {
-	size_t i;
+	size_t	i;
 
 	if (!s || s[0] != '-')
 		return (0);
@@ -29,19 +29,17 @@ static int is_echo_n_flag(const char *s)
 
 int	shell_echo(char **args, t_data *data)
 {
-	int i;
-	int print_newline;
+	int	i;
+	int	print_newline;
 
 	(void)data;
 	i = 0;
 	print_newline = 1;
-
 	while (args[i] && is_echo_n_flag(args[i]))
 	{
 		print_newline = 0;
 		i++;
 	}
-
 	while (args[i])
 	{
 		write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
